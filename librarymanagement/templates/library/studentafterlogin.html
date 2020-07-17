@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+<style media="screen">
+
+
+
+
+.jumbotron{
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.jumbotron h1{
+  text-align: center;
+}
+
+
+</style>
+  </head>
+  <body>
+    {% include "library/navbarstudent.html" %}
+    <br>
+    <br>
+  
+    <div class="jumbotron"   style="    margin-bottom: 0px;">
+    <h1 class="display-4">Hello {{user.first_name}} !</h1>
+    
+  
+    <hr class="my-4">
+    <p><b>Option Available For You :</b></p>
+    <div class="options" style="text-align:center">
+      <a href="viewissuedbookbystudent" class="btn btn-primary btn-lg active" role="button" >View issued book to you</a><br><br>
+      <a href="viewbook" class="btn btn-primary btn-lg active" role="button" >View books in the library</a><br><br>
+        </div>
+
+    </div>
+
+
+  </body>
+</html>

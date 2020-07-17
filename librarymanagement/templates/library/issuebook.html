@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>VVDN</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+
+
+    <style type="text/css">
+    	body {
+    		color: #aa082e;
+    		
+    		font-family: 'Roboto', sans-serif;
+    	}
+      
+    	.signup-form {
+    		width: 500px;
+    		margin: 0 auto;
+    		padding: 30px 0;
+    	}
+        .signup-form h2 {
+    		color: #333;
+    		padding: 0 30px 10px 0;
+    	    border-bottom: 3px solid #ffffff;
+        }
+      
+           
+    
+    </style>
+
+
+
+
+
+
+  </head>
+  <body >
+    {% include "library/navbaradmin.html" %}
+    <br>
+    <br>
+
+    <div class="signup-form">
+        <form  method="post" class="form-horizontal">
+
+    			<center><h2>ISSUE BOOK TO STUDENT</h2></center>
+
+{% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+              <label class="control-label col-xs-4">{{ field.label_tag }}</label>
+              <div class="col-xs-8">
+              {{ field }}
+               </div>
+            </div>
+            {% endfor %}
+
+
+    		<div class="form-group">
+    			<div class="col-xs-8 col-xs-offset-4">
+            <button type="submit" class="btn btn-primary btn-lg">ISSUE</button>
+    			</div>
+    		</div>
+        </form>
+    	<div class="text-center">View Issued Book to Student  <a href="viewissuedbook">Click here</a></div>
+    </div>
+
+
+
+  </body>
+</html>
