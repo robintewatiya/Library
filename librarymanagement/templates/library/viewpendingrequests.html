@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+
     <style media="screen">
     table.redTable {
 border: 2px solid #A40808;
@@ -60,46 +61,42 @@ border-radius: 5px;
     {% include "library/navbaradmin.html" %}
     <br>
     <br>
-    <h3 class="p-3 mb-2 bg-primary text-white" style = 'font-size: 50px;text-align:center;margin-bottom:0px;'>Issued books to Student !</h3>
+    <h3 class="p-3 mb-2 bg-primary text-white" style = 'font-size: 50px;text-align:center;'>Requests !</h3>
 
-{% if li%}
-    <table class="redTable">
-    <thead>
+    {% if all_request%}
+<table class="redTable">
+<thead>
+<tr>
+<th>Book Name</th>
+<th>User Name</th>
+<th>Action</th>
+<th>Action</th>
+</tr>
+</thead>
+<tfoot>
+<tr>
+<td colspan="3">
+<div class="links"></div>
+</td>
+</tr>
+</tfoot>
+<tbody>
+  {% for pr in all_request %}
     <tr>
-    <th>Student Name</th>
-    <th>Student Enrollment</th>
-    <th>Book Name</th>
-    <th>Book Author</th>
-    <th>Issue Date</th>
-    <th>Expiry Date</th>
-    <th>Fine</th>
+      <td>{{pr.book_name}}</td>
+      <td>{{pr.user_name}}</td>
+    <td><a href="{% url 'approverequest' pr.book_id pr.user_id %}" class="btn btn-danger">Approve</a></td>
+    <td><a href="{% url 'denyrequest' pr.book_id pr.user_id %}" class="btn btn-danger">Deny</a></td>
+
     </tr>
-    </thead>
-    <tfoot>
-    <tr>
-    <td colspan="7">
-    <div class="links"></div>
-    </td>
-    </tr>
-    </tfoot>
-    <tbody>
-      {% for t in li %}
-        <tr>
-          <td>{{t.0}}</td>
-          <td>{{t.1}}</td>
-          <td>{{t.2}}</td>
-          <td>{{t.3}}</td>
-          <td>{{t.4}}</td>
-          <td>{{t.5}}</td>
-          <td>{{t.6}}</td>
-          <td><a href="delete/{{t.7}}" class="btn btn-danger" id = '{{t.7}}'>Delete</a></td>
-        </tr>
-        {%endfor%}
-    </tbody>
-    </table>
-    {%else%}
-    <h1> 0 book Issued</h1>
-    {%endif%}
+
+  {% endfor %}
+</tbody>
+</table>
+{%else%}
+<h1> No Pending Requests</h1>
+{%endif%}
+
 
   </body>
 </html>

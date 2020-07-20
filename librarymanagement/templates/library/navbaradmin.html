@@ -46,8 +46,8 @@
                 <div class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Book</a>
                   <div class="dropdown-menu">
-                    <a href="addbook" class="dropdown-item">Add Book</a>
-                    <a href="viewbook" class="dropdown-item">View Book</a>
+                    <a href="{% url 'addbook' %}" class="dropdown-item">Add Book</a>
+                    <a href="{% url 'viewbook' %}" class="dropdown-item">View Book</a>
                   </div>
                 </div>
 
@@ -55,8 +55,8 @@
                 <div class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Issue Book</a>
                   <div class="dropdown-menu">
-                    <a href="issuebook" class="dropdown-item">Issue New Book</a>
-                    <a href="viewissuedbook" class="dropdown-item">View Issued Book</a>
+                    <a href="{% url 'issuebook' %}" class="dropdown-item">Issue New Book</a>
+                    <a href="{% url 'viewissuedbook' %}" class="dropdown-item">View Issued Book</a>
                   </div>
                 </div>
 
@@ -64,7 +64,7 @@
                 <div class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Student</a>
                   <div class="dropdown-menu">
-                    <a href="viewstudent" class="dropdown-item">View Student</a>
+                    <a href="{% url 'viewstudent' %}" class="dropdown-item">View Student</a>
                   </div>
                 </div>
 
@@ -72,7 +72,7 @@
             </div>
 
             <div class="navbar-nav">
-                <a href="logout" class="nav-item nav-link">LOGOUT</a> &nbsp
+                <a href="{% url 'logout' %}" class="nav-item nav-link">LOGOUT</a> &nbsp
                
             </div>
 

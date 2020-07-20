@@ -35,15 +35,26 @@ urlpatterns = [
     path('adminlogin', LoginView.as_view(template_name='library/adminlogin.html')),
     path('studentlogin', LoginView.as_view(template_name='library/studentlogin.html')),
 
-    path('logout/', LogoutView.as_view(template_name='library/index.html')),
+    path('logout/', LogoutView.as_view(template_name='library/index.html'), name='logout'),
     path('afterlogin', views.afterlogin_view),
     path('viewbook/delete/<int:book_id>', views.delete_book),
+    path('viewissuedbook/delete/<int:isbn>', views.deassociate_book),
 
-    path('addbook', views.addbook_view),
-    path('viewbook/', views.viewbook_view),
-    path('issuebook', views.issuebook_view),
-    path('viewissuedbook', views.viewissuedbook_view),
-    path('viewstudent', views.viewstudent_view),
-    path('viewissuedbookbystudent', views.viewissuedbookbystudent),
+    #path('addrequest/<int:book_id>/<int:user_id>/', views.request_add_book),
+    path('addrequest/<int:book_id>/<int:user_id>/', views.request_add_book, name='addrequest'),
+    path('deleterequest/<int:book_id>/<int:user_id>/', views.request_delete_book, name='deleterequest'),
+    path('approverequest/<int:book_id>/<int:user_id>/', views.approve_request, name='approverequest'),
+    path('denyrequest/<int:book_id>/<int:user_id>/', views.deny_request, name='denyrequest'),
+    #path(r'^viewlibrary/addrequest/(?P<book_id>\w+)/(?P<user_id>\w+)/$', views.request_add_book),
+
+    path(r'addbook/', views.addbook_view, name='addbook'),
+    path(r'viewbook/', views.viewbook_view, name='viewbook'),
+    path(r'issuebook/', views.issuebook_view, name='issuebook'),
+    path(r'viewissuedbook/', views.viewissuedbook_view, name='viewissuedbook'),
+    path(r'viewstudent/', views.viewstudent_view, name='viewstudent'),
+    path(r'viewlibrary/', views.viewlibrary_view, name='viewlibrary'),
+    path(r'viewissuedbookbystudent/', views.viewissuedbookbystudent, name='viewissuedbookbystudent'),
+    path(r'viewrequestedbooks/', views.viewrequestedbooks, name='viewrequestedbooks'),
+    path(r'viewpendingrequest/', views.viewpendingrequests, name='viewpendingrequest')
 
 ]

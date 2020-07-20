@@ -34,12 +34,14 @@ class Book(models.Model):
     isbn=models.PositiveIntegerField()
     author=models.CharField(max_length=40)
     category=models.CharField(max_length=30,choices=catchoice,default='education')
+    allotment_status = models.CharField(max_length=30,choices=catchoice,default='0')
     def __str__(self):
         return str(self.name)+"["+str(self.isbn)+']'
 
 
 def get_expiry():
     return datetime.today() + timedelta(days=15)
+
 class IssuedBook(models.Model):
     enrollment=models.CharField(max_length=30)
     isbn=models.CharField(max_length=30)
@@ -47,3 +49,9 @@ class IssuedBook(models.Model):
     expirydate=models.DateField(default=get_expiry)
     def __str__(self):
         return self.enrollment
+
+class PendingAddRequest(models.Model):
+    book_id=models.PositiveIntegerField()
+    user_id=models.PositiveIntegerField()
+    def __str__(self):
+        return str(self.user_id)+"["+str(self.book_id)+']'

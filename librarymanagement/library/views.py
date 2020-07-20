@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponseRedirect
 from . import forms,models
 from django.contrib.auth.models import Group
@@ -6,6 +6,8 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import datetime,timedelta,date
 from .models import Book
+from django.urls import reverse
+
 
 
 def home_view(request):
@@ -44,10 +46,6 @@ def adminsignup_view(request):
     return render(request,'library/adminsignup.html',{'form':form})
 
 
-
-
-
-
 def studentsignup_view(request):
     form1=forms.StudentUserForm()
     form2=forms.StudentExtraForm()
@@ -70,10 +68,9 @@ def studentsignup_view(request):
     return render(request,'library/studentsignup.html',context=mydict)
 
 
-
-
 def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
+
 
 def afterlogin_view(request):
     if is_admin(request.user):
@@ -101,7 +98,35 @@ def viewbook_view(request):
     books=models.Book.objects.all()
     return render(request,'library/viewbook.html',{'books':books})
 
+@login_required(login_url='studentlogin')
+def viewlibrary_view(request):
+    book_ids = list()
 
+    pending_requests = models.PendingAddRequest.objects.filter(
+    user_id=request.user.id)
+
+    # Remove the requested books
+    for book_request in pending_requests:
+        book_ids.append(book_request.book_id)
+
+    books = models.Book.objects.all().exclude(id__in=list(set(book_ids)))
+
+    return render(request,'library/viewlibrary.html',{'books':books})
+
+@login_required(login_url='studentlogin')
+def viewrequestedbooks(request):
+    book_ids = list()
+
+    pending_requests = models.PendingAddRequest.objects.filter(
+    user_id=request.user.id)
+
+    # Remove the requested books
+    for book_request in pending_requests:
+        book_ids.append(book_request.book_id)
+
+    books = models.Book.objects.filter(pk__in=list(set(book_ids)))
+
+    return render(request,'library/viewrequestedbooks.html',{'books':books})
 
 
 @login_required(login_url='adminlogin')
@@ -111,12 +136,18 @@ def issuebook_view(request):
     if request.method=='POST':
         #now this form have data from html
         form=forms.IssuedBookForm(request.POST)
-        if form.is_valid():
-            obj=models.IssuedBook()
-            obj.enrollment=request.POST.get('enrollment2')
-            obj.isbn=request.POST.get('isbn2')
-            obj.save()
+        book_record = models.Book.objects.get(isbn = request.POST.get('isbn2'))
+        if form.is_valid() and book_record.allotment_status == '0':
+            book_record.allotment_status = '1'
+            book_record.save()
+            models.IssuedBook.objects.create(
+    enrollment=request.POST.get('enrollment2'), isbn=request.POST.get('isbn2'))
+            # obj.save()
             return render(request,'library/bookissued.html')
+        else:
+            return render(request, 'library/bookissued.html', {'alert_flag': True})
+
+
     return render(request,'library/issuebook.html',{'form':form})
 
 
@@ -142,7 +173,7 @@ def viewissuedbook_view(request):
         students=list(models.StudentExtra.objects.filter(enrollment=ib.enrollment))
         i=0
         for l in books:
-            t=(students[i].get_name,students[i].enrollment,books[i].name,books[i].author,issdate,expdate,fine)
+            t=(students[i].get_name,students[i].enrollment,books[i].name,books[i].author,issdate,expdate,fine, books[i].isbn)
             i=i+1
             li.append(t)
 
@@ -153,6 +184,25 @@ def viewissuedbook_view(request):
 def viewstudent_view(request):
     students=models.StudentExtra.objects.all()
     return render(request,'library/viewstudent.html',{'students':students})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def viewpendingrequests(request):
+    all_request = list()
+    pending_requests = models.PendingAddRequest.objects.all()
+
+    for pending in pending_requests:
+
+        one_request = dict()
+        one_request['book_name'] = models.Book.objects.get(id = pending.book_id).name
+        user = models.User.objects.get(id=pending.user_id)
+        one_request['user_name'] = user.first_name
+        one_request['user_id'] = pending.user_id
+        one_request['book_id'] = pending.book_id
+        all_request.append(one_request)
+        print(one_request)
+    print(all_request)
+    return render(request,'library/viewpendingrequests.html', {'all_request':all_request})
 
 
 @login_required(login_url='studentlogin')
@@ -190,6 +240,83 @@ def delete_book(request, book_id):
     try:
         book_sel = models.Book.objects.get(id = book_id)
     except models.Book.DoesNotExist:
-        return render(request,'library/viewbook.html',{'books':Book.objects.all()})
+        return HttpResponseRedirect(reverse(viewbook_view))
     book_sel.delete()
-    return render(request,'library/viewbook.html',{'books':Book.objects.all()})
+    return HttpResponseRedirect(reverse(viewbook_view))
+
+@login_required(login_url='studentlogin')
+def request_add_book(request, book_id, user_id):
+    book_id = int(book_id)
+    user_id = int(user_id)
+    try:
+        book_record = models.Book.objects.get(id = book_id)
+        if book_record.allotment_status == '0':
+            models.PendingAddRequest.objects.create(
+        user_id=user_id, book_id=book_id)
+        else:
+            return render(request, 'library/viewlibrary.html', {'alert_flag': True})
+
+    except models.Book.DoesNotExist:
+        return HttpResponseRedirect(reverse(viewlibrary_view))
+    return HttpResponseRedirect(reverse(viewlibrary_view))
+
+@login_required(login_url='studentlogin')
+def request_delete_book(request, book_id, user_id):
+    book_id = int(book_id)
+    user_id = int(user_id)
+    try:
+        requested_book = models.PendingAddRequest.objects.filter(
+    user_id=user_id, book_id=book_id)
+    except models.Book.DoesNotExist:
+        return HttpResponseRedirect(reverse(viewrequestedbooks))
+    requested_book.delete()
+    return HttpResponseRedirect(reverse(viewrequestedbooks))
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def approve_request(request, book_id, user_id):
+    book_id = int(book_id)
+    user_id = int(user_id)
+    try:
+        requested_book = models.PendingAddRequest.objects.filter(
+    user_id=user_id, book_id=book_id)
+        student = models.StudentExtra.objects.get(user_id=user_id)
+        book_record = models.Book.objects.get(id=book_id)
+
+        book_record.allotment_status = '1'
+
+        book_record.save()
+
+        models.IssuedBook.objects.create(enrollment = student.enrollment, isbn = book_record.isbn)
+        requested_book.delete()
+    except Exception as e:
+        return HttpResponseRedirect(reverse(viewpendingrequests))
+
+    return HttpResponseRedirect(reverse(viewpendingrequests))
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def deny_request(request, book_id, user_id):
+    book_id = int(book_id)
+    user_id = int(user_id)
+    try:
+        requested_book = models.PendingAddRequest.objects.filter(
+    user_id=user_id, book_id=book_id)
+
+    except Exception as e:
+        return HttpResponseRedirect(reverse(viewpendingrequests))
+    requested_book.delete()
+    return HttpResponseRedirect(reverse(viewpendingrequests))
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def deassociate_book(request, isbn):
+    try:
+        issue_record = models.IssuedBook.objects.filter(isbn = isbn)
+        book_record = models.Book.objects.get(isbn = isbn)
+        book_record.allotment_status = '0'
+        book_record.save()
+    except models.Book.DoesNotExist:
+        return HttpResponseRedirect(reverse(viewissuedbook_view))
+    issue_record.delete()
+    return HttpResponseRedirect(reverse(viewissuedbook_view))

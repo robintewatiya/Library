@@ -47,7 +47,7 @@
                 <div class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Issue Book</a>
                   <div class="dropdown-menu">
-                    <a href="viewissuedbookbystudent" class="dropdown-item">View Issued Book</a>
+                    <a href="{% url 'viewissuedbookbystudent' %}" class="dropdown-item">View Issued Book</a>
                   </div>
                 </div>
 
@@ -55,7 +55,7 @@
             </div>
 
             <div class="navbar-nav">
-                <a href="logout" class="nav-item nav-link">LOGOUT</a> &nbsp
+                <a href="{% url 'logout' %}"class="nav-item nav-link">LOGOUT</a> &nbsp
             
             </div>
 
