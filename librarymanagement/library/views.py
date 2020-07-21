@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from . import forms,models
 from django.contrib.auth.models import Group
@@ -89,9 +89,11 @@ def addbook_view(request):
         form=forms.BookForm(request.POST)
         if form.is_valid():
             user=form.save()
-            return render(request,'library/bookadded.html')
-    return render(request,'library/addbook.html',{'form':form})
+        else:
+            return render(request, 'library/addbook.html', {'alert_flag': True,'form':form})
 
+        return render(request,'library/bookadded.html')
+    return render(request,'library/addbook.html',{'form':form})
 
 
 def viewbook_view(request):
@@ -249,12 +251,21 @@ def request_add_book(request, book_id, user_id):
     book_id = int(book_id)
     user_id = int(user_id)
     try:
-        book_record = models.Book.objects.get(id = book_id)
-        if book_record.allotment_status == '0':
-            models.PendingAddRequest.objects.create(
-        user_id=user_id, book_id=book_id)
-        else:
-            return render(request, 'library/viewlibrary.html', {'alert_flag': True})
+
+      book_ids = list()
+
+      pending_requests = models.PendingAddRequest.objects.filter(user_id = request.user.id)
+
+    # Remove the requested books
+      for book_request in pending_requests:
+          book_ids.append(book_request.book_id)
+
+      books = models.Book.objects.all().exclude(id__in=list(set(book_ids)))
+      book_record = models.Book.objects.get(id = book_id)
+      if book_record.allotment_status == '0':
+          models.PendingAddRequest.objects.create(user_id=user_id, book_id=book_id)
+      else:
+          return render(request, 'library/viewlibrary.html', {'alert_flag': True, 'books':books})
 
     except models.Book.DoesNotExist:
         return HttpResponseRedirect(reverse(viewlibrary_view))

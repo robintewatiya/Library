@@ -70,12 +70,11 @@ border-radius: 5px;
 <th>Book Name</th>
 <th>User Name</th>
 <th>Action</th>
-<th>Action</th>
 </tr>
 </thead>
 <tfoot>
 <tr>
-<td colspan="3">
+<td colspan="4">
 <div class="links"></div>
 </td>
 </tr>
@@ -85,8 +84,8 @@ border-radius: 5px;
     <tr>
       <td>{{pr.book_name}}</td>
       <td>{{pr.user_name}}</td>
-    <td><a href="{% url 'approverequest' pr.book_id pr.user_id %}" class="btn btn-danger">Approve</a></td>
-    <td><a href="{% url 'denyrequest' pr.book_id pr.user_id %}" class="btn btn-danger">Deny</a></td>
+    <td><a href="{% url 'approverequest' pr.book_id pr.user_id %}" class="btn btn-primary">Approve</a>
+    <a href="{% url 'denyrequest' pr.book_id pr.user_id %}" class="btn btn-danger">Deny</a></td>
 
     </tr>
 

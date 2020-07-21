@@ -40,12 +40,11 @@ urlpatterns = [
     path('viewbook/delete/<int:book_id>', views.delete_book),
     path('viewissuedbook/delete/<int:isbn>', views.deassociate_book),
 
-    #path('addrequest/<int:book_id>/<int:user_id>/', views.request_add_book),
     path('addrequest/<int:book_id>/<int:user_id>/', views.request_add_book, name='addrequest'),
     path('deleterequest/<int:book_id>/<int:user_id>/', views.request_delete_book, name='deleterequest'),
     path('approverequest/<int:book_id>/<int:user_id>/', views.approve_request, name='approverequest'),
     path('denyrequest/<int:book_id>/<int:user_id>/', views.deny_request, name='denyrequest'),
-    #path(r'^viewlibrary/addrequest/(?P<book_id>\w+)/(?P<user_id>\w+)/$', views.request_add_book),
+   
 
     path(r'addbook/', views.addbook_view, name='addbook'),
     path(r'viewbook/', views.viewbook_view, name='viewbook'),
@@ -55,6 +54,6 @@ urlpatterns = [
     path(r'viewlibrary/', views.viewlibrary_view, name='viewlibrary'),
     path(r'viewissuedbookbystudent/', views.viewissuedbookbystudent, name='viewissuedbookbystudent'),
     path(r'viewrequestedbooks/', views.viewrequestedbooks, name='viewrequestedbooks'),
-    path(r'viewpendingrequest/', views.viewpendingrequests, name='viewpendingrequest')
+    path(r'viewpendingrequest/', views.viewpendingrequests, name='viewpendingrequest'),
 
 ]

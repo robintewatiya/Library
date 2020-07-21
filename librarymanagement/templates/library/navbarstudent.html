@@ -50,7 +50,14 @@
                     <a href="{% url 'viewissuedbookbystudent' %}" class="dropdown-item">View Issued Book</a>
                   </div>
                 </div>
-
+		<!--for book dropdown button-->
+                <div class="nav-item dropdown">
+                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Book</a>
+                  <div class="dropdown-menu">
+                    <a href="{% url 'viewlibrary' %}" class="dropdown-item">View Book In Library</a>
+                    <a href="{% url 'viewrequestedbooks' %}" class="dropdown-item">View Requested Book</a>
+                  </div>
+                </div>
 
             </div>
 
